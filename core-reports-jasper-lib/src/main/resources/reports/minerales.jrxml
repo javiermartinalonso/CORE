@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recursos_minerais" printOrder="Horizontal" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="316671d9-9970-4ccb-a4c5-72827e3955f3">
+	<property name="ireport.zoom" value="1.3310000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="59"/>
+	<parameter name="IMAGEN_ESCUDO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="provincia" class="java.lang.String"/>
+	<parameter name="title" class="java.lang.String"/>
+	<parameter name="estado" class="java.lang.String"/>
+	<parameter name="formato" class="java.lang.String"/>
+	<parameter name="cabeceras" class="java.lang.Boolean"/>
+	<queryString>
+		<![CDATA[select
+		recurso.id,
+		(recurso.nombre)::character varying,
+		recurso.value iniciales,
+		(count(*))::int,
+		coalesce(estado.designação, 'Sem Estado') estado
+
+
+
+	from
+		(select
+		max(title.version_id) version_id,
+		max(title.copy_id) copy_id,
+		max(title.instance_id) instance_id,
+		title.id id
+
+	from
+		cadastro.direito_mineiro title
+	where
+		title.copy_id = 0
+	group by
+		title.id) title
+
+	inner join
+		cadastro.direito_mineiro datos
+	on
+		title.instance_id = datos.instance_id
+
+
+		left outer join
+			cadastro.estado_direito_mineiro estado
+		on
+			estado.id = datos.estado_direito
+
+		left outer join
+			cadastro.localização loc
+		on
+			loc.direito_mineiro_id = datos.instance_id
+
+		left outer join
+			"geolocalização".provincia provincia
+		on
+			loc.provincia = provincia.id_provincia
+
+join
+
+		(select
+
+			mineral.designação nombre,
+			mineral.id_recurso id,
+			rt.direito_mineiro_id,
+			mineral.value
+
+		from
+			cadastro.resources_m_i mineral
+
+		left outer join
+			cadastro.join_resources_m_i_to_direito_mineiro rt
+		on
+			rt.resources_m_i_id = mineral.id_recurso
+
+		left outer join
+			cadastro.direito_mineiro t
+		on
+			t.instance_id = rt.direito_mineiro_id
+
+	union all
+
+		select
+
+			grupo.designação nombre,
+			grupo.id_grupo_recurso id, grt.direito_mineiro_id,
+			grupo.value
+
+
+		from
+			cadastro.tipo_grupo_recurso grupo
+
+
+
+		left outer join
+			cadastro.join_tipo_grupo_recurso_to_direito_mineiro grt
+		on
+			grt.tipo_grupo_recurso_id = grupo.id_grupo_recurso
+
+		left outer join
+			cadastro.direito_mineiro t2
+		on
+			t2.instance_id = grt.direito_mineiro_id) recurso
+
+
+on title.instance_id = recurso.direito_mineiro_id
+
+where
+	($P{provincia} is null or (provincia.provincia) like ($P{provincia} || '%' ))
+
+and 	($P{estado} is null or (estado.designação like ('%'|| $P{estado} || '%' )))
+
+
+and  	($P{title} is null or (
+  	(((((datos.estado_direito)::bigint)::text)::varchar) in ($P!{title})
+
+ 	 or
+
+ 	 estado is null)))
+
+
+group by recurso.nombre, recurso.id, estado.designação,recurso.value
+
+order by nombre]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="iniciales" class="java.lang.String"/>
+	<field name="count" class="java.lang.Integer"/>
+	<field name="estado" class="java.lang.String"/>
+	<variable name="Suma" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{count}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="161" splitType="Stretch">
+			<image>
+				<reportElement x="256" y="0" width="80" height="56" uuid="12defe34-cf26-4948-9495-e0748720ed04"/>
+				<imageExpression><![CDATA[$P{IMAGEN_ESCUDO}]]></imageExpression>
+			</image>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement x="283" y="102" width="170" height="15" uuid="9d4763b6-593f-49b5-8035-26b6d255671d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="142" y="86" width="311" height="16" uuid="948bcfb2-2be7-4245-aea7-8a461a112477"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Direcção Nacional de Licenciamento e Cadastro Mineiro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="71" width="311" height="15" uuid="3c2c4960-1fad-43bd-ae4d-d21932642ff4"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ministerio de Geologia e Minas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="102" width="141" height="15" uuid="cd0500cb-50f2-4987-9397-bf1066a6e3c8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data:]]></text>
+			</staticText>
+			<textField pattern="HH.mm.ss">
+				<reportElement x="283" y="117" width="170" height="15" uuid="76d5a5ca-e4aa-4330-89fb-0efd953a9ba5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="142" y="132" width="311" height="22" uuid="9c07490d-1db3-44c1-95ca-ad4f45b1eeb6"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Direitos Mineiros agrupados por recursos minerais]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="56" width="311" height="15" uuid="cc97cbd5-bfcd-4d63-9981-ecdc05f0563c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[República de Angola]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="117" width="141" height="15" uuid="32969665-d49c-4103-98ad-94689acfbd0c"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30" splitType="Stretch">
+			<printWhenExpression><![CDATA[(( (!$P{cabeceras}.booleanValue() && ($V{PAGE_NUMBER}.intValue()==1) )
+    || $P{cabeceras}.booleanValue())?
+Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="15" width="100" height="15" uuid="9b836bcc-733f-4ee5-b841-c3acbe78a307"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Provincia:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="15" width="183" height="15" uuid="c0ece6be-798b-4d2d-af6e-c15a6b576af0"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{provincia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="283" height="15" uuid="ce7d8827-1fb1-414f-befe-8a0f905e68c8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Parámetros para o relatório]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<printWhenExpression><![CDATA[(( (!$P{cabeceras}.booleanValue() && ($V{PAGE_NUMBER}.intValue()==1) )
+    || $P{cabeceras}.booleanValue())?
+Boolean.TRUE:Boolean.FALSE)]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="0" width="283" height="15" uuid="df1a8125-c8d9-4cb3-99e7-4f428d70c3f8"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Direitos Mineiros agrupados por recursos minerais]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="15" width="154" height="15" uuid="337b7105-55a8-4a51-a845-d070cddf56a5"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Recurso mineral]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="211" y="15" width="72" height="15" uuid="6b845580-a4ee-4954-8ad2-330b0b3c943d"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="15" width="57" height="15" uuid="0fd33dbd-c048-4eb1-9210-2c05886cc14e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="0" width="154" height="15" uuid="1bd1d1ba-8e8f-4722-a0d3-3f03718ab642"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="154" y="0" width="57" height="15" uuid="011b7e50-cd21-4232-893a-286bdfece63b"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="211" y="0" width="72" height="15" uuid="6fc74a9f-05f0-4203-a612-3d8a032fe729"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="390" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="154" height="15" uuid="e4b3d1e3-c44b-4be5-885a-fce1eca683dd"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="154" y="0" width="57" height="15" uuid="91243409-ce8e-4643-8b99-6fdb423478ca"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Suma}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="15" width="154" height="15" uuid="7dded607-3f55-481e-91f7-e8073f0716e0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="211" y="0" width="72" height="15" uuid="de0df870-af2c-4bc0-b236-89f0d276ff05"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<stackedBar3DChart>
+				<chart isShowLegend="true">
+					<reportElement x="0" y="30" width="555" height="360" uuid="de65d623-d4d4-4f9f-a645-d6bbb77edcf1"/>
+					<chartTitle position="Top"/>
+					<chartSubtitle/>
+					<chartLegend>
+						<font size="10"/>
+					</chartLegend>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{estado}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{iniciales}.toUpperCase()]]></categoryExpression>
+						<valueExpression><![CDATA[$F{count}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot orientation="Horizontal"/>
+					<itemLabel>
+						<font size="8"/>
+					</itemLabel>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</stackedBar3DChart>
+		</band>
+	</summary>
+</jasperReport>

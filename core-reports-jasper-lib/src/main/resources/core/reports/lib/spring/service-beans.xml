@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+			
+	<bean name="expedientesService" class="es.satec.igeo.silcam.core.services.impl.ExpedientesServiceImpl">
+		<property name="aplicacionRepository" ref="aplicacionRepository" />
+ 		<property name="expedientesBPMService" ref="expedientesBPMService"/>
+ 		<property name="expedienteRepository" ref="expedienteRepository" />
+ 		<property name="usuariosBPMService" ref="usuariosBPMService"/>			
+	</bean>
+	
+	<bean name="aplicacionesService" class="es.satec.igeo.silcam.core.services.impl.AplicacionesServiceImpl">
+		<property name="aplicacionRepository" ref="aplicacionRepository" />
+ 		<property name="expedientesBPMService" ref="expedientesBPMService"/>	
+ 		<property name="procesBPMService" ref="procesBPMService"/>
+ 			
+	</bean>
+
+	<bean name="expedientesViewsService" class="es.satec.igeo.silcam.core.services.impl.ExpedientesViewsServiceImpl">
+		<property name="expedientesBPMViewsService" ref="expedientesBPMViewsService"/>
+	</bean>
+	
+	<bean name="maestrosService" class="es.satec.igeo.silcam.core.services.impl.MaestrosServiceImpl">
+		<property name="provinciasRepository" ref="provinciasRepository"/> 
+		<property name="municipiosRepository" ref="municipiosRepository" />
+ 		<property name="comunasRepository" ref="comunasRepository"/>
+	</bean>
+
+	<bean name="tareasService" class="es.satec.igeo.silcam.core.services.impl.TareasServiceImpl">
+		<property name="tareasBPMService" ref="tareasBPMService"/>
+		<property name="usuariosBPMService" ref="usuariosBPMService"/>	
+		<property name="expedientesBPMService" ref="expedientesBPMService"/>
+	</bean>
+	
+	<bean name="usuariosService" class="es.satec.igeo.silcam.core.services.impl.UsuariosServiceImpl">
+		<property name="usuariosBPMService" ref="usuariosBPMService"/>
+	</bean>
+	
+	<!--  Managers  -->
+	<bean id="docManager" class="es.satec.igeo.silcam.core.manager.DocumentsManagerImpl">
+		<property name="propertiesLoader" ref="propertiesLoader"/>	
+		<property name="viewsManager" ref="viewsManager"/>
+		<property name="dbManager" ref="dbManager"/>
+		<property name="ecmManager" ref="ecmManager"/>
+		<property name="bpmManager" ref="bpmManager"/>
+		<property name="aplicacionService" ref="aplicacionesService"/>		
+	</bean>
+	
+	
+	
+</beans>
