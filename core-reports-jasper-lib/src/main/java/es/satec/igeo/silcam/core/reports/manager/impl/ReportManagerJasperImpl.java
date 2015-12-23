@@ -21,7 +21,6 @@ import es.satec.igeo.silcam.core.reports.model.Plantilla;
 import es.satec.igeo.silcam.core.reports.model.impl.DataSourcePlantillaJasper;
 import es.satec.igeo.silcam.core.reports.model.impl.PlantillaJasper;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -44,7 +43,7 @@ public class ReportManagerJasperImpl implements ReportManager
 	public static void main(String[] args)
 	{
 
-		ReportManagerJasperImpl reportManagerJasperImpl = new ReportManagerJasperImpl();
+		ReportManager reportManagerJasperImpl = new ReportManagerJasperImpl();
 		
 		DataBeanMaker dataBeanMaker = new DataBeanMaker();
 		ArrayList<DataBean> dataBeanList = dataBeanMaker.getDataBeanList();
@@ -141,25 +140,6 @@ public class ReportManagerJasperImpl implements ReportManager
 	}
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	@Override
 	public void generateReportFile(Collection<?> collectionDataSource, Plantilla plantilla, Map<String, Object> parameters, Informe informe)
 	{
@@ -218,6 +198,7 @@ public class ReportManagerJasperImpl implements ReportManager
 	
 	
 
+	@Override
 	public void generateReportOutputStream(DataSourcePlantilla dataSourcePlantilla, Plantilla plantilla, Map<String, Object> parameters, Informe informe, OutputStream outputStream)
 	{
 		try
@@ -250,6 +231,7 @@ public class ReportManagerJasperImpl implements ReportManager
 
 	
 	
+	@Override
 	public byte[] generateReportByte(DataSourcePlantilla dataSourcePlantilla, Plantilla plantilla, Map<String, Object> parameters, Informe informe)
 	{
 		try
