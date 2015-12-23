@@ -8,5 +8,5 @@
 	<!-- <import resource="classpath:/core/configuration/lib/spring/configuration-beans.xml"/> -->
 				
 	<!-- servicios expuestos -->
-	<import resource="classpath:/core/reports/lib/spring/service-beans.xml" />	
+	<import resource="classpath:/core/reports/spring/service-beans.xml" />	
 </beans>
