@@ -1,5 +1,6 @@
 package es.satec.igeo.silcam.core.reports.manager;
 
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,5 +15,11 @@ public interface ReportManager
 
 
 	void generateReportFile(Collection<?> collectionDataSource, Plantilla plantilla, Map<String, Object> parameters, Informe informe);
+
+
+	byte[] generateReportByte(DataSourcePlantilla dataSourcePlantilla, Plantilla plantilla, Map<String, Object> parameters, Informe informe);
+
+
+	void generateReportOutputStream(DataSourcePlantilla dataSourcePlantilla, Plantilla plantilla, Map<String, Object> parameters, Informe informe, OutputStream outputStream);
 
 }

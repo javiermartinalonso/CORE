@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import es.satec.igeo.silcam.core.reports.manager.ReportManager;
 import es.satec.igeo.silcam.core.reports.manager.impl.ReportManagerJasperImpl;
 import es.satec.igeo.silcam.core.reports.model.DataSourcePlantilla;
 import es.satec.igeo.silcam.core.reports.model.ExtensionInformes;
@@ -38,7 +39,7 @@ public class WebController
 	@RequestMapping(value = "download/{plantillaName}.{plantillaExtension}", method = RequestMethod.GET)
 	public @ResponseBody void downloadInforme(@PathVariable String plantillaName, @PathVariable String plantillaExtension, HttpServletRequest request, HttpServletResponse response)
 	{
-		ReportManagerJasperImpl reportManagerJasperImpl = new ReportManagerJasperImpl();
+		ReportManager reportManagerJasperImpl = new ReportManagerJasperImpl();
 
 		Plantilla plantilla = null;
 
@@ -118,7 +119,7 @@ public class WebController
 	@RequestMapping(value = "{plantillaName}.{plantillaExtension}", method = RequestMethod.GET)
 	public ResponseEntity<byte[]> getFileInformeMinerales(@PathVariable String plantillaName, @PathVariable String plantillaExtension)
 	{
-		ReportManagerJasperImpl reportManagerJasperImpl = new ReportManagerJasperImpl();
+		ReportManager reportManagerJasperImpl = new ReportManagerJasperImpl();
 
 		Plantilla plantilla = null;
 
